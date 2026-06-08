@@ -1,6 +1,7 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
-from sqlalchemy import String
+from sqlalchemy import String 
+from sqlalchemy.orm import relationship
 
 from app.db.database import Base
 
@@ -34,3 +35,4 @@ class User(Base):
         String,
         default="employee"
     )
+    tasks = relationship("Task", back_populates="owner")

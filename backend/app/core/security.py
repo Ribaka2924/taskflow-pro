@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
+from jose import JWTError
+from fastapi import HTTPException
 
 SECRET_KEY = "taskflow_super_secret_key"
 
@@ -47,3 +49,18 @@ def create_access_token(
         SECRET_KEY,
         algorithm=ALGORITHM
     )
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        return payload
+
+    except JWTError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token"
+        )
