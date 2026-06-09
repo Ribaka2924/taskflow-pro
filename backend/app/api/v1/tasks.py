@@ -57,21 +57,75 @@ def create_task(
     response_model=list[TaskResponse]
 )
 def get_tasks(
+    status: str | None = None,
+    priority: str | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(
         get_current_user
     )
 ):
 
-    tasks = (
+    query = (
         db.query(Task)
         .filter(
             Task.owner_id == current_user.id
         )
-        .all()
     )
 
+    if status:
+        query = query.filter(
+            Task.status == status
+        )
+
+    if priority:
+        query = query.filter(
+            Task.priority == priority
+        )
+
+    tasks = query.all()
+
     return tasks
+
+@router.get("/stats")
+def task_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    )
+):
+
+    total_tasks = (
+        db.query(Task)
+        .filter(
+            Task.owner_id == current_user.id
+        )
+        .count()
+    )
+
+    completed_tasks = (
+        db.query(Task)
+        .filter(
+            Task.owner_id == current_user.id,
+            Task.status == "completed"
+        )
+        .count()
+    )
+
+    pending_tasks = (
+        db.query(Task)
+        .filter(
+            Task.owner_id == current_user.id,
+            Task.status == "pending"
+        )
+        .count()
+    )
+
+    return {
+        "total_tasks": total_tasks,
+        "completed_tasks": completed_tasks,
+        "pending_tasks": pending_tasks
+    }
+
 
 @router.get(
     "/{task_id}",
@@ -100,7 +154,7 @@ def get_task(
             detail="Task not found"
         )
 
-    return task 
+    return task
 
 @router.put(
     "/{task_id}",
