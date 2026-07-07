@@ -38,11 +38,12 @@ def create_task(
 ):
 
     task = Task(
-        title=payload.title,
-        description=payload.description,
-        priority=payload.priority,
-        owner_id=current_user.id
-    )
+    title=payload.title,
+    description=payload.description,
+    priority=payload.priority,
+    status=payload.status,
+    owner_id=current_user.id
+)
 
     db.add(task)
 

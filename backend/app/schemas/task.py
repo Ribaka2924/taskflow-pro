@@ -5,6 +5,7 @@ class TaskCreate(BaseModel):
     title: str
     description: str | None = None
     priority: str = "medium"
+    status: str = "pending"
 
 
 class TaskUpdate(BaseModel):

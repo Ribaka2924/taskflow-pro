@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import api from "../api/axios";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -17,48 +17,76 @@ function Login() {
 
       localStorage.setItem("token", response.data.access_token);
 
-      alert("Login Successful!");
-
       navigate("/dashboard");
     } catch (error) {
-      console.log(error);
-      console.log(error.response);
-      console.log(error.response?.status);
-      console.log(error.response?.data);
-
-      alert("Login Failed");
+      alert("Invalid Email or Password");
     }
   };
 
   return (
     <div
       style={{
-        width: "350px",
-        margin: "100px auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "15px",
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #dbeafe, #e9d5ff)",
       }}
+      className="d-flex justify-content-center align-items-center"
     >
-      <h1>TaskFlow Pro</h1>
+      <div
+        className="card shadow-lg p-5"
+        style={{
+          width: "430px",
+          borderRadius: "20px",
+        }}
+      >
+        <div className="text-center mb-4">
+          <h1 style={{ fontSize: "60px" }}>📋</h1>
 
-      <h2>Login</h2>
+          <h2
+            style={{
+              color: "#4f46e5",
+              fontWeight: "bold",
+            }}
+          >
+            TaskFlow Pro
+          </h2>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+          <p className="text-muted">Organize your work. Achieve your goals.</p>
+        </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          className="form-control mb-3"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <button onClick={handleLogin}>Login</button>
+        <input
+          className="form-control mb-4"
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          className="btn btn-primary w-100 rounded-pill"
+          onClick={handleLogin}
+        >
+          Login
+        </button>
+
+        <hr />
+
+        <p
+          className="text-center text-muted"
+          style={{
+            fontStyle: "italic",
+          }}
+        >
+          "Success is the sum of small efforts repeated every day."
+        </p>
+      </div>
     </div>
   );
 }
