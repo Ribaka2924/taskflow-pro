@@ -17,8 +17,12 @@ function Dashboard() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
 
   const fetchTasks = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -33,9 +37,12 @@ function Dashboard() {
       });
 
       setTasks(response.data);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      alert("Failed to load tasks");
+      setLoading(false);
+      setMessageType("danger");
+      setMessage("❌ Failed to load tasks");
     }
   };
 
@@ -73,6 +80,8 @@ function Dashboard() {
           },
         },
       );
+      setMessageType("success");
+      setMessage("✅ Task created successfully");
 
       setTitle("");
       setDescription("");
@@ -82,7 +91,8 @@ function Dashboard() {
       fetchStats();
     } catch (error) {
       console.log(error);
-      alert("Failed to create task");
+      setMessageType("danger");
+      setMessage("❌ Failed to create task");
     }
   };
 
@@ -95,12 +105,14 @@ function Dashboard() {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      setMessageType("success");
+      setMessage("🗑️ Task deleted successfully");
       fetchTasks();
       fetchStats();
     } catch (error) {
       console.log(error);
-      alert("Failed to delete task");
+      setMessageType("danger");
+      setMessage("❌ Failed to delete task");
     }
   };
 
@@ -122,6 +134,8 @@ function Dashboard() {
           },
         },
       );
+      setMessageType("success");
+      setMessage("✏️ Task updated successfully");
 
       setEditingId(null);
       setTitle("");
@@ -132,7 +146,8 @@ function Dashboard() {
       fetchStats();
     } catch (error) {
       console.log(error);
-      alert("Failed to update task");
+      setMessageType("danger");
+      setMessage("❌ Failed to update task");
     }
   };
 
@@ -145,6 +160,16 @@ function Dashboard() {
     fetchTasks();
     fetchStats();
   }, [filterStatus, filterPriority]);
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+      }, 8000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   return (
     <div
@@ -170,6 +195,19 @@ function Dashboard() {
         </div>
 
         <hr />
+        {message && (
+          <div
+            className={`alert alert-${messageType} alert-dismissible fade show`}
+          >
+            {message}
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => setMessage("")}
+            ></button>
+          </div>
+        )}
+
         <div className="row mb-4">
           <div className="col-md-4">
             <div className="card text-center p-3">
@@ -273,7 +311,15 @@ function Dashboard() {
           </div>
         </div>
 
-        {tasks.length === 0 ? (
+        {loading ? (
+          <div className="text-center my-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+
+            <p className="mt-3">Loading Tasks...</p>
+          </div>
+        ) : tasks.length === 0 ? (
           <div className="text-center mt-5">
             <h3>📋 No Tasks Yet</h3>
             <p className="text-muted">Create your first task to get started.</p>
@@ -329,7 +375,15 @@ function Dashboard() {
 
                   <button
                     className="btn btn-danger"
-                    onClick={() => deleteTask(task.id)}
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to delete this task?",
+                        )
+                      ) {
+                        deleteTask(task.id);
+                      }
+                    }}
                   >
                     Delete
                   </button>
