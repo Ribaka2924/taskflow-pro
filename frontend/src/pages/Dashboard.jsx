@@ -232,7 +232,7 @@ function Dashboard() {
         </div>
 
         <div className="card p-3 mb-4">
-          <h3>Create Task</h3>
+          <h3>{editingId ? "✏️ Update Task" : "➕ Create New Task"}</h3>
 
           <input
             className="form-control mb-2"
@@ -332,10 +332,13 @@ function Dashboard() {
             .map((task) => (
               <div className="card mb-3" key={task.id}>
                 <div className="card-body">
-                  <h4>{task.title}</h4>
+                  <h4 className="fw-bold">{task.title}</h4>
 
-                  <p>{task.description}</p>
+                  <p className="text-muted">
+                    {task.description || "No description provided."}
+                  </p>
 
+                  <p className="text-secondary">Task ID: #{task.id}</p>
                   <div className="d-flex gap-2 mb-3">
                     <span
                       className={`badge ${
@@ -391,6 +394,13 @@ function Dashboard() {
               </div>
             ))
         )}
+        <div className="text-center text-muted mt-5">
+          <hr />
+
+          <p>TaskFlow Pro © 2026</p>
+
+          <small>Built with ❤️ using React + FastAPI</small>
+        </div>
       </div>
     </div>
   );
